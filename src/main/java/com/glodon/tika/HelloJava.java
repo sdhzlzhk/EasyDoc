@@ -7,5 +7,6 @@ public class HelloJava {
     public static void main(String[] args) {
         System.out.print("hello git java.");
         System.out.println("这是我远程修改的");
+        System.out.println("我又修改了代码哦");
     }
 }
