@@ -17,7 +17,8 @@ import java.util.regex.Pattern;
  */
 public class XWPFTests {
 //    public static final String FILE_NAME = "C:\\Users\\liuzk\\Desktop\\建筑安全产品\\广西建工三建安全管理系统联合开发方案.docx";
-    public static final String FILE_NAME = "C:\\Users\\liuzk\\Desktop\\第八组—酒店管理系统软件文档.docx";
+    public static final String FILE_NAME = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.docx";
+//    public static final String FILE_NAME = "E:\\毕业论文\\计算机专业张亚涛-OA-办公自动化系统的设计与实现.docx";
     private static Pattern NUM_PATTERN = Pattern.compile("\\d+");
     public static void main(String[] args) {
         XWPFTests test = new XWPFTests();
@@ -41,7 +42,7 @@ public class XWPFTests {
         List<XWPFParagraph> paragraphList = doc.getParagraphs();
         String style = null;
         for(XWPFParagraph paragraph : paragraphList){
-            if(paragraph.isEmpty()) continue;
+//            if(paragraph.isEmpty()) continue;
             style = paragraph.getStyleID();
             if(null != style){
                 Matcher styleMatcher = NUM_PATTERN.matcher(style);
@@ -49,7 +50,7 @@ public class XWPFTests {
                     /*XWPFNumbering numbering = paragraph.getDocument().getNumbering();
                     XWPFNum xwpfNum = numbering.getNum(paragraph.getNumID());
                     System.out.println(xwpfNum.getCTNum().getNumId());*/
-                    System.out.println("NumberId = "+ paragraph.getNumID() +"\tstyle = " + style + "\tcontent：" + paragraph.getParagraphText());
+                    System.out.println("NumberId = "+ paragraph.getNumID() +"    style = " + style + "     content：" + paragraph.getParagraphText());
                 }
             }
 
