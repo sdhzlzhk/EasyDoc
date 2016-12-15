@@ -12,11 +12,12 @@
 
   <properties>
       <tika.version>1.14</tika.version>
+      <poi.version>3.16-beta1</poi.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencies>
-      <dependency>
+      <!--<dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
             <version>${tika.version}</version>
@@ -25,18 +26,49 @@
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
             <version>${tika.version}</version>
-        </dependency>
+        </dependency>-->
+      <dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi</artifactId>
+          <version>${poi.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi-excelant</artifactId>
+          <version>${poi.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi-scratchpad</artifactId>
+          <version>${poi.version}</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.apache.poi</groupId>
+                  <artifactId>poi</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi-ooxml</artifactId>
+          <version>${poi.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi-ooxml-schemas</artifactId>
+          <version>${poi.version}</version>
+      </dependency>
       <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
           <version>4.12</version>
           <scope>test</scope>
       </dependency>
-      <dependency>
+      <!--<dependency>
           <groupId>org.apache.poi</groupId>
           <artifactId>ooxml-schemas</artifactId>
           <version>1.0</version>
           <scope>test</scope>
-      </dependency>
+      </dependency>-->
   </dependencies>
 </project>

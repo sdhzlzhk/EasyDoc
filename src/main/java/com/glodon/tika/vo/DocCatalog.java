@@ -1,0 +1,32 @@
+package com.glodon.tika.vo;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * @author liuzk
+ * @create 2016-12-15 19:10.
+ * 目录对象
+ */
+public class DocCatalog implements Serializable {
+    /**目录名称*/
+    private String catalogName;
+    /**子目录*/
+    private List<DocCatalog> childCatalog;
+
+    public List<DocCatalog> getChildCatalog() {
+        return childCatalog;
+    }
+
+    public void setChildCatalog(List<DocCatalog> childCatalog) {
+        this.childCatalog = childCatalog;
+    }
+
+    public String getCatalogName() {
+        return catalogName;
+    }
+
+    public void setCatalogName(String catalogName) {
+        this.catalogName = catalogName;
+    }
+}
