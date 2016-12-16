@@ -22,6 +22,8 @@ public class XWPFTests {
     public static final String FILE_NAME = "C:\\Users\\liuzk\\Desktop\\header.docx";
 //    public static final String FILE_NAME = "D:\\workspace\\help-document\\header.docx";
     private static Pattern NUM_PATTERN = Pattern.compile("\\d+");
+    private static final Pattern CODE_EXTRACT_PATTERN = Pattern.compile("^(\\d+\\.*)+");
+    private static final Pattern CODE_PATTERN = Pattern.compile("^(\\d+\\.?)+(?<=\\d)$");
     public static void main(String[] args) throws Exception{
         XWPFTests test = new XWPFTests();
         try {
@@ -61,8 +63,14 @@ public class XWPFTests {
                     if(styleMatcher.matches()){
                         /*XWPFNumbering numbering = paragraph.getDocument().getNumbering();
                         XWPFNum xwpfNum = numbering.getNum(paragraph.getNumID());*/
-                        System.out.println(paragraph.getElementType().name());
-                        System.out.println("NumberId = "+ paragraph.getNumID() + "   NumLevelText = " + paragraph.getNumLevelText() + "   NumFmt = " + paragraph.getNumIlvl() + "    style = " + style + "     content：" + paragraph.getParagraphText());
+                        String paragraphText = paragraph.getParagraphText();
+                        System.out.println("NumberId = "+ paragraph.getNumID() + "   NumLevelText = " + paragraph.getNumLevelText() + "   NumFmt = " + paragraph.getNumIlvl() + "    style = " + style + "     content：" + paragraphText);
+                        Matcher catalogMatcher = CODE_EXTRACT_PATTERN.matcher(paragraphText);
+                        if(catalogMatcher.find()){
+                            String catalogCode = catalogMatcher.group();
+                            catalogMatcher = CODE_PATTERN.matcher(catalogCode);
+                            System.out.println("code = " + catalogCode + "   是否符合格式 ：" + catalogMatcher.matches());
+                        }
                     }
                 }
             }

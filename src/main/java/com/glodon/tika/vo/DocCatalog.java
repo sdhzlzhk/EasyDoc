@@ -1,6 +1,7 @@
 package com.glodon.tika.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,5 +43,12 @@ public class DocCatalog implements Serializable {
 
     public void setCatalogName(String catalogName) {
         this.catalogName = catalogName;
+    }
+
+    public void addChildCatalog(DocCatalog docCatalog){
+        if(null == this.childCatalog){
+            this.childCatalog = new ArrayList<>();
+        }
+        this.childCatalog.add(docCatalog);
     }
 }

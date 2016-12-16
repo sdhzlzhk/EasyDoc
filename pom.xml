@@ -12,7 +12,7 @@
 
   <properties>
       <tika.version>1.14</tika.version>
-      <poi.version>3.16-beta1</poi.version>
+      <poi.version>3.15</poi.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
