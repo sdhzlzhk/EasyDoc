@@ -19,7 +19,7 @@ public class XWPFTests {
 //    public static final String FILE_NAME = "C:\\Users\\liuzk\\Desktop\\建筑安全产品\\广西建工三建安全管理系统联合开发方案.docx";
 //    public static final String FILE_NAME = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.docx";
 //    public static final String FILE_NAME = "E:\\毕业论文\\计算机专业张亚涛-OA-办公自动化系统的设计与实现.docx";
-    public static final String FILE_NAME = "C:\\Users\\liuzk\\Desktop\\header.docx";
+    public static final String FILE_NAME = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.docx";
 //    public static final String FILE_NAME = "D:\\workspace\\help-document\\header.docx";
     private static Pattern NUM_PATTERN = Pattern.compile("\\d+");
     private static final Pattern CODE_EXTRACT_PATTERN = Pattern.compile("^(\\d+\\.*)+");
@@ -50,19 +50,11 @@ public class XWPFTests {
             String style = null;
             XWPFParagraph paragraph = null;
             while(paragraphList.hasNext()){
-//            if(paragraph.isEmpty()) continue;
                 paragraph = paragraphList.next();
                 style = paragraph.getStyleID();
-//            System.out.println("########" + paragraph.getDocument().getNumbering());
-//            System.out.println(paragraph.getCTP());
-            /*int numberingLevel = paragraph.getCTP().getPPr().getNumPr().getIlvl().getVal().intValue();
-            System.out.println("Number Level = " + numberingLevel);*/
-//                System.out.println("NumberId = "+ paragraph.getNumID() +"    style = " + style + "     content：" + paragraph.getParagraphText());
                 if(null != style) {
                     Matcher styleMatcher = NUM_PATTERN.matcher(style);
                     if(styleMatcher.matches()){
-                        /*XWPFNumbering numbering = paragraph.getDocument().getNumbering();
-                        XWPFNum xwpfNum = numbering.getNum(paragraph.getNumID());*/
                         String paragraphText = paragraph.getParagraphText();
                         System.out.println("NumberId = "+ paragraph.getNumID() + "   NumLevelText = " + paragraph.getNumLevelText() + "   NumFmt = " + paragraph.getNumIlvl() + "    style = " + style + "     content：" + paragraphText);
                         Matcher catalogMatcher = CODE_EXTRACT_PATTERN.matcher(paragraphText);

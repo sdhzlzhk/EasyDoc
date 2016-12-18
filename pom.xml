@@ -58,6 +58,11 @@
           <artifactId>poi-ooxml-schemas</artifactId>
           <version>${poi.version}</version>
       </dependency>
+      <!--<dependency>
+          <groupId>org.apache.poi</groupId>
+          <artifactId>poi-examples</artifactId>
+          <version>${poi.version}</version>
+      </dependency>-->
       <dependency>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
