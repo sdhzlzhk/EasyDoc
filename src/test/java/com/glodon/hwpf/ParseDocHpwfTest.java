@@ -7,7 +7,6 @@ import org.apache.poi.hwpf.usermodel.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,8 +14,8 @@ import java.util.UUID;
  * Created by zhongkai on 2016/12/17.
  */
 public class ParseDocHpwfTest {
-//    private static final String FILE_PATH = "C:\\Users\\liuzk\\Desktop\\sentry调研文档.doc";
-    private static final String FILE_PATH = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.doc";
+    private static final String FILE_PATH = "C:\\Users\\liuzk\\Desktop\\sentry调研文档.doc";
+//    private static final String FILE_PATH = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.doc";
     private static final String IMAGE_DIR = "\\sentry图片";
     public static final String NEXT_PAGE = "\f";
     public static void main(String[] args) throws IOException {
