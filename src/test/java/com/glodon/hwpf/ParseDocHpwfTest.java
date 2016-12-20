@@ -4,11 +4,10 @@ import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.model.PicturesTable;
 import org.apache.poi.hwpf.usermodel.*;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by zhongkai on 2016/12/17.
@@ -16,7 +15,7 @@ import java.util.UUID;
 public class ParseDocHpwfTest {
     private static final String FILE_PATH = "C:\\Users\\liuzk\\Desktop\\sentry调研文档.doc";
 //    private static final String FILE_PATH = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.doc";
-    private static final String IMAGE_DIR = "\\sentry图片";
+    private static final String IMAGE_DIR = "\\sentry图片\\";
     public static final String NEXT_PAGE = "\f";
     public static void main(String[] args) throws IOException {
         //TODO first create a HWPFDocument
@@ -37,7 +36,6 @@ public class ParseDocHpwfTest {
         int characterRuns = docRange.numCharacterRuns();
         System.out.println("paragraphs = " + paragraphs + "  sections = " + sections +"  characterRuns = " + characterRuns);
         PicturesTable picturesTable = document.getPicturesTable();
-        List<Picture> pictures = picturesTable.getAllPictures();
         for(int i = 0; i < sections; i++){
             Section curSection = docRange.getSection(i);
             System.out.println("###############Section 第" + (i+1) + " 章 has " + curSection.numSections() + " sub sections.#############");
@@ -67,15 +65,37 @@ public class ParseDocHpwfTest {
                                 CharacterRun characterRun = paragraph.getCharacterRun(k);
                                 if(picturesTable.hasPicture(characterRun)){
                                     Picture picture = picturesTable.extractPicture(characterRun,false);
-                                    imgPath = IMAGE_DIR + UUID.randomUUID().toString() + ".jpg";
+//                                    System.out.println("图片名称 = " + picture.suggestFullFileName() + "图片类型 = " + picture.suggestFileExtension());
+                                    imgPath = System.getProperty("user.dir") + IMAGE_DIR;
+                                    File imgOut = new File(imgPath);
+                                    if(!imgOut.exists()){
+                                        imgOut.mkdirs();
+                                    }
+                                    imgPath = imgPath + picture.suggestFullFileName();
                                     picture.writeImageContent(new FileOutputStream(imgPath));
                                 }
                             }
                             System.out.println(paragraph.isWordWrapped() + " 有图片" + imgPath);
                         } else {
                             if(paragraph.isInTable()) {
+//                                TableIterator tableIterator = new TableIterator(paragraph);
+                                System.out.println("tableLevel = " + paragraph.getTableLevel());
                                 Table table = curSection.getTable(paragraph);
-                                System.out.println("表格:"+table.numRows()+"行");
+                                TableRow tableRow = null;
+                                TableCell tableCell = null;
+                                for(int t = 0; t < table.numRows(); t++){
+                                    System.out.println("第" + (t + 1) + "行");
+                                    tableRow = table.getRow(t);
+                                    int cellNums = tableRow.numCells();
+                                    for(int col = 0; col < cellNums; col++) {
+                                        tableCell = tableRow.getCell(col);
+                                        System.out.print(tableCell.text() + " # ");
+                                    }
+                                    System.out.println();
+                                }
+                                j += table.numParagraphs();
+                                j--;
+                                continue;
                             } else {
                                 System.out.println("styleIndex "+ paragraph.getStyleIndex() + " #" + paragraph.numCharacterRuns() + " StartOffset "+ paragraph.getStartOffset() + "  EndOffset = " + paragraph.getEndOffset() +"   内容：" + Paragraph.stripFields(text));
                             }
