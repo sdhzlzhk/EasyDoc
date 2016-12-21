@@ -14,8 +14,8 @@ import java.io.IOException;
  * Created by zhongkai on 2016/12/17.
  */
 public class ParseDocHpwfTest {
-    private static final String FILE_PATH = "C:\\Users\\liuzk\\Desktop\\sentry调研文档.doc";
-//    private static final String FILE_PATH = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.doc";
+//    private static final String FILE_PATH = "C:\\Users\\liuzk\\Desktop\\sentry调研文档.doc";
+    private static final String FILE_PATH = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.doc";
     private static final String IMAGE_DIR = "\\sentry图片\\";
     public static final String NEXT_PAGE = "\f";
     public static void main(String[] args) throws IOException {
@@ -41,7 +41,8 @@ public class ParseDocHpwfTest {
             Section curSection = docRange.getSection(i);
             System.out.println("###############Section 第" + (i+1) + " 章 has " + curSection.numSections() + " sub sections.#############");
 //            picturesTable.extractPicture()
-            for(int j = 0; j < curSection.numParagraphs(); j++){
+            processSection(document,curSection,i);
+            /*for(int j = 0; j < curSection.numParagraphs(); j++){
                 Paragraph paragraph = curSection.getParagraph(j);
                 //TODO: 判断空行
                 if(paragraph.numCharacterRuns() > 1) {
@@ -66,7 +67,6 @@ public class ParseDocHpwfTest {
                                 CharacterRun characterRun = paragraph.getCharacterRun(k);
                                 if(picturesTable.hasPicture(characterRun)){
                                     Picture picture = picturesTable.extractPicture(characterRun,false);
-//                                    System.out.println("图片名称 = " + picture.suggestFullFileName() + "图片类型 = " + picture.suggestFileExtension());
                                     imgPath = System.getProperty("user.dir") + IMAGE_DIR;
                                     File imgOut = new File(imgPath);
                                     if(!imgOut.exists()){
@@ -79,7 +79,6 @@ public class ParseDocHpwfTest {
                             System.out.println(paragraph.isWordWrapped() + " 有图片" + imgPath);
                         } else {
                             if(paragraph.isInTable()) {
-//                                TableIterator tableIterator = new TableIterator(paragraph);
                                 System.out.println("tableLevel = " + paragraph.getTableLevel());
                                 Table table = curSection.getTable(paragraph);
                                 TableRow tableRow = null;
@@ -103,7 +102,7 @@ public class ParseDocHpwfTest {
                         }
                     }
                 }
-            }
+            }*/
             System.out.println("##################第 "+(i+1)+" 章结束##################");
         }
     }
@@ -126,6 +125,15 @@ public class ParseDocHpwfTest {
                 processParagraph(hwpfDoc,catalogSection.getParagraph(p));
             }
         }
+    }
+
+    /***
+     * 处理普通章节
+     * @param section
+     * @param rangeIndex
+     */
+    private static void processSection(HWPFDocumentCore hwpfDoc,final Section section ,int rangeIndex){
+            processParagraphs(hwpfDoc,section);
     }
 
     /***
@@ -209,15 +217,6 @@ public class ParseDocHpwfTest {
     }
 
     /***
-     * 处理普通章节
-     * @param section
-     * @param rangeIndex
-     */
-    private static void processSection(HWPFDocumentCore hwpfDoc,final Section section ,int rangeIndex){
-
-    }
-
-    /***
      * 处理段落
      * @param range
      */
@@ -241,14 +240,12 @@ public class ParseDocHpwfTest {
      */
     private static void processTable(HWPFDocumentCore hwpfDoc,Table table) {
         for(int r = 0; r < table.numRows(); r++) {
-            System.out.println("第" + (r + 1) + "行");
             TableRow tableRow = table.getRow(r);
             for(int col = 0; col < tableRow.numCells(); col++) {
                 TableCell tableCell = tableRow.getCell(col);
 //                System.out.print(tableCell.text() + " # ");
                 processParagraphs(hwpfDoc,tableCell);
             }
-            System.out.println();
         }
     }
 
