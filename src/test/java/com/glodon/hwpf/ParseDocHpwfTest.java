@@ -1,6 +1,7 @@
 package com.glodon.hwpf;
 
 import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.HWPFDocumentCore;
 import org.apache.poi.hwpf.model.PicturesTable;
 import org.apache.poi.hwpf.usermodel.*;
 
@@ -36,7 +37,7 @@ public class ParseDocHpwfTest {
         int characterRuns = docRange.numCharacterRuns();
         System.out.println("paragraphs = " + paragraphs + "  sections = " + sections +"  characterRuns = " + characterRuns);
         PicturesTable picturesTable = document.getPicturesTable();
-        for(int i = 0; i < sections; i++){
+        for(int i = 0; i < sections; i++) {
             Section curSection = docRange.getSection(i);
             System.out.println("###############Section 第" + (i+1) + " 章 has " + curSection.numSections() + " sub sections.#############");
 //            picturesTable.extractPicture()
@@ -104,9 +105,150 @@ public class ParseDocHpwfTest {
                 }
             }
             System.out.println("##################第 "+(i+1)+" 章结束##################");
-            /*if(i > 1){
-                break;
-            }*/
+        }
+    }
+
+    /***
+     * 处理目录章节，我们约定目录章节为第二章节
+     * @param section
+     * @param catalogIndex
+     * @param comfirm
+     */
+    private static void processCatalogSection(HWPFDocumentCore hwpfDoc,final Section section,int catalogIndex,boolean comfirm){
+        Section catalogSection = null;
+        if(comfirm){
+            catalogSection = section.getSection(catalogIndex);
+        } else {
+            catalogSection = section.getSection(2);
+        }
+        if(null != catalogSection){
+            for(int p = 0;p < catalogSection.numParagraphs(); p++){
+                processParagraph(hwpfDoc,catalogSection.getParagraph(p));
+            }
+        }
+    }
+
+    /***
+     * 处理段落
+     * @param hwpfDoc
+     * @param paragraph
+     */
+    private static void processParagraph(HWPFDocumentCore hwpfDoc,Paragraph paragraph) {
+        final int charRuns = paragraph.numCharacterRuns();
+        if(charRuns == 0){
+            return;
+        }
+        processCharacters(hwpfDoc,paragraph);
+    }
+
+    /**
+     * 处理段落中字符
+     * @param range
+     */
+    private static void processCharacters(HWPFDocumentCore hwpfDoc,Range range) {
+        if(hwpfDoc instanceof HWPFDocument){
+            HWPFDocument wordDoc = (HWPFDocument)hwpfDoc;
+            String text = null;
+            for (int c = 0; c < range.numCharacterRuns(); c++) {
+                CharacterRun chRun = range.getCharacterRun(c);
+                if(wordDoc.getPicturesTable().hasPicture(chRun)){
+                    Picture picture = wordDoc.getPicturesTable().extractPicture(chRun,false);
+                    System.out.println("图片路径：" + processImage(picture));
+                    continue;
+                }
+                //处理一般文本数据
+                if(chRun.isSpecialCharacter() || chRun.isObj() || chRun.isOle2()) {
+                    continue;
+                }
+                text = chRun.text();
+                if(null == text || text.isEmpty()) {
+                    continue;
+                }
+                if ( text.charAt(0) == 20 ) {
+                    // shall not appear without FIELD_BEGIN_MARK
+                    continue;
+                }
+                if ( text.charAt(0) == 21 )
+                {
+                    // shall not appear without FIELD_BEGIN_MARK
+                    continue;
+                }
+                if (text.endsWith( "\r") || (text.charAt( text.length() - 1) == 7))
+                    text = text.substring( 0, text.length() - 1 );
+                /*StringBuilder stringBuilder = new StringBuilder();
+                for ( char charChar : text.toCharArray() ) {
+                    if ( charChar >= 0x20 || charChar == 0x09
+                            || charChar == 0x0A || charChar == 0x0D )
+                    {
+                        stringBuilder.append(charChar);
+                    }
+                }
+                if (stringBuilder.length() > 0 ) {
+                    stringBuilder.toString();
+                    stringBuilder.setLength( 0 );
+                }*/
+            }
+            System.out.println("文本：" + text);
+        } else {
+            throw new RuntimeException("仅支持HWPF处理");
+        }
+    }
+
+    /***
+     * 处理图片
+     * @param picture
+     */
+    private static String processImage(Picture picture) {
+        DocPictureManager picManger = new DocPictureManager();
+        try {
+            return picManger.savePicture(picture);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "";
+        }
+    }
+
+    /***
+     * 处理普通章节
+     * @param section
+     * @param rangeIndex
+     */
+    private static void processSection(HWPFDocumentCore hwpfDoc,final Section section ,int rangeIndex){
+
+    }
+
+    /***
+     * 处理段落
+     * @param range
+     */
+    private static void processParagraphs(HWPFDocumentCore hwpfDoc,Range range) {
+        for(int p = 0;p < range.numParagraphs();p++){
+            Paragraph para = range.getParagraph(p);
+            if(para.isInTable()){
+                Table table = range.getTable(para);
+                processTable(hwpfDoc,table);
+                p += table.numParagraphs();
+                p--;
+                continue;
+            }
+            processParagraph(hwpfDoc,para);
+        }
+    }
+
+    /**
+     * 处理表格
+     * @param table
+     */
+    private static void processTable(HWPFDocumentCore hwpfDoc,Table table) {
+        for(int r = 0; r < table.numRows(); r++) {
+            System.out.println("第" + (r + 1) + "行");
+            TableRow tableRow = table.getRow(r);
+            for(int col = 0; col < tableRow.numCells(); col++) {
+                TableCell tableCell = tableRow.getCell(col);
+//                System.out.print(tableCell.text() + " # ");
+                processParagraphs(hwpfDoc,tableCell);
+            }
+            System.out.println();
         }
     }
 
