@@ -5,9 +5,7 @@ import org.apache.poi.hwpf.HWPFDocumentCore;
 import org.apache.poi.hwpf.model.PicturesTable;
 import org.apache.poi.hwpf.usermodel.*;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -15,7 +13,8 @@ import java.io.IOException;
  */
 public class ParseDocHpwfTest {
 //    private static final String FILE_PATH = "C:\\Users\\liuzk\\Desktop\\sentry调研文档.doc";
-    private static final String FILE_PATH = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.doc";
+    private static final String FILE_PATH = "C:\\Users\\liuzk\\Desktop\\header.doc";
+//    private static final String FILE_PATH = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.doc";
     private static final String IMAGE_DIR = "\\sentry图片\\";
     public static final String NEXT_PAGE = "\f";
     public static void main(String[] args) throws IOException {
@@ -133,7 +132,7 @@ public class ParseDocHpwfTest {
      * @param rangeIndex
      */
     private static void processSection(HWPFDocumentCore hwpfDoc,final Section section ,int rangeIndex){
-            processParagraphs(hwpfDoc,section);
+            processParagraphs(hwpfDoc,section,Integer.MIN_VALUE);
     }
 
     /***
@@ -156,7 +155,7 @@ public class ParseDocHpwfTest {
     private static void processCharacters(HWPFDocumentCore hwpfDoc,Range range) {
         if(hwpfDoc instanceof HWPFDocument){
             HWPFDocument wordDoc = (HWPFDocument)hwpfDoc;
-            String text = null;
+            String resut = "";
             for (int c = 0; c < range.numCharacterRuns(); c++) {
                 CharacterRun chRun = range.getCharacterRun(c);
                 if(wordDoc.getPicturesTable().hasPicture(chRun)){
@@ -168,7 +167,8 @@ public class ParseDocHpwfTest {
                 if(chRun.isSpecialCharacter() || chRun.isObj() || chRun.isOle2()) {
                     continue;
                 }
-                text = chRun.text();
+                String text = chRun.text();
+
                 if(null == text || text.isEmpty()) {
                     continue;
                 }
@@ -181,8 +181,12 @@ public class ParseDocHpwfTest {
                     // shall not appear without FIELD_BEGIN_MARK
                     continue;
                 }
-                if (text.endsWith( "\r") || (text.charAt( text.length() - 1) == 7))
+                if(text.equals("\f")){
+                    continue;
+                }
+                if (text.endsWith( "\r") || (text.charAt(text.length() - 1) == 7)) {
                     text = text.substring( 0, text.length() - 1 );
+                }
                 /*StringBuilder stringBuilder = new StringBuilder();
                 for ( char charChar : text.toCharArray() ) {
                     if ( charChar >= 0x20 || charChar == 0x09
@@ -195,8 +199,9 @@ public class ParseDocHpwfTest {
                     stringBuilder.toString();
                     stringBuilder.setLength( 0 );
                 }*/
+                resut = resut + text;
             }
-            System.out.println("文本：" + text);
+            System.out.println("文本：" + resut);
         } else {
             throw new RuntimeException("仅支持HWPF处理");
         }
@@ -220,15 +225,20 @@ public class ParseDocHpwfTest {
      * 处理段落
      * @param range
      */
-    private static void processParagraphs(HWPFDocumentCore hwpfDoc,Range range) {
+    private static void processParagraphs(HWPFDocumentCore hwpfDoc,Range range,int currentTableLevel) {
         for(int p = 0;p < range.numParagraphs();p++){
             Paragraph para = range.getParagraph(p);
-            if(para.isInTable()){
+            if(para.isInTable() && para.getTableLevel() != currentTableLevel){
                 Table table = range.getTable(para);
                 processTable(hwpfDoc,table);
                 p += table.numParagraphs();
                 p--;
                 continue;
+            }
+            if(para.isInList()){
+                HWPFList hwpfList = para.getList();
+                String numberText = hwpfList.getNumberText((char) para.getIlvl());
+                System.out.println(numberText);
             }
             processParagraph(hwpfDoc,para);
         }
@@ -244,7 +254,7 @@ public class ParseDocHpwfTest {
             for(int col = 0; col < tableRow.numCells(); col++) {
                 TableCell tableCell = tableRow.getCell(col);
 //                System.out.print(tableCell.text() + " # ");
-                processParagraphs(hwpfDoc,tableCell);
+                processParagraphs(hwpfDoc,tableCell,table.getTableLevel());
             }
         }
     }

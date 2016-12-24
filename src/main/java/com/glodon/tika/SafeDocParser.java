@@ -119,7 +119,7 @@ public class SafeDocParser {
 
     public static void main(String[] args) {
         try {
-            WordToHtmlConverter.main(new String[]{"C:\\Users\\liuzk\\Desktop\\lzhk.doc","C:\\Users\\liuzk\\Desktop\\lzhk.html"});
+            WordToHtmlConverter.main(new String[]{"C:\\Users\\liuzk\\Desktop\\header.doc","C:\\Users\\liuzk\\Desktop\\header.html"});
         } catch (Exception e) {
             e.printStackTrace();
         }

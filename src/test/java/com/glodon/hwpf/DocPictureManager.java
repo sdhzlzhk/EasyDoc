@@ -20,7 +20,7 @@ public class DocPictureManager implements PicturesManager {
     }
 
     public String savePicture(Picture picture) throws IOException {
-        String imgPath = System.getProperty("user.dir") + IMG_RELATIVE_DIR + picture.suggestFullFileName();
+        String imgPath = System.getProperty("user.dir") + "/" + IMG_RELATIVE_DIR + picture.suggestFullFileName();
         File imgOut = new File(imgPath);
         if(!imgOut.exists()){
             imgOut.getParentFile().mkdirs();
