@@ -2,6 +2,8 @@ package com.glodon.hwpf;
 
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.HWPFDocumentCore;
+import org.apache.poi.hwpf.converter.AbstractWordUtils;
+import org.apache.poi.hwpf.converter.AbstractWordUtils.NumberingState;
 import org.apache.poi.hwpf.model.PicturesTable;
 import org.apache.poi.hwpf.usermodel.*;
 
@@ -13,10 +15,10 @@ import java.io.IOException;
  */
 public class ParseDocHpwfTest {
 //    private static final String FILE_PATH = "C:\\Users\\liuzk\\Desktop\\sentry调研文档.doc";
-    private static final String FILE_PATH = "C:\\Users\\liuzk\\Desktop\\header.doc";
-//    private static final String FILE_PATH = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.doc";
-    private static final String IMAGE_DIR = "\\sentry图片\\";
+//    private static final String FILE_PATH = "C:\\Users\\liuzk\\Desktop\\header.doc";
+    private static final String FILE_PATH = "C:\\Users\\zhongkai\\Desktop\\sentry调研文档.doc";
     public static final String NEXT_PAGE = "\f";
+    private static final NumberingState numberStat = new NumberingState();
     public static void main(String[] args) throws IOException {
         //TODO first create a HWPFDocument
         FileInputStream inputStream = null;
@@ -121,7 +123,7 @@ public class ParseDocHpwfTest {
         }
         if(null != catalogSection){
             for(int p = 0;p < catalogSection.numParagraphs(); p++){
-                processParagraph(hwpfDoc,catalogSection.getParagraph(p));
+                processParagraph(hwpfDoc,catalogSection.getParagraph(p),"");
             }
         }
     }
@@ -140,19 +142,20 @@ public class ParseDocHpwfTest {
      * @param hwpfDoc
      * @param paragraph
      */
-    private static void processParagraph(HWPFDocumentCore hwpfDoc,Paragraph paragraph) {
+    private static void processParagraph(HWPFDocumentCore hwpfDoc,Paragraph paragraph,String bulletText) {
         final int charRuns = paragraph.numCharacterRuns();
         if(charRuns == 0){
             return;
         }
-        processCharacters(hwpfDoc,paragraph);
+        String paraText = bulletText + processCharacters(hwpfDoc,paragraph);
+        System.out.println("段落：" + paraText);
     }
 
     /**
      * 处理段落中字符
      * @param range
      */
-    private static void processCharacters(HWPFDocumentCore hwpfDoc,Range range) {
+    private static String processCharacters(HWPFDocumentCore hwpfDoc,Range range) {
         if(hwpfDoc instanceof HWPFDocument){
             HWPFDocument wordDoc = (HWPFDocument)hwpfDoc;
             String resut = "";
@@ -201,7 +204,8 @@ public class ParseDocHpwfTest {
                 }*/
                 resut = resut + text;
             }
-            System.out.println("文本：" + resut);
+//            System.out.println("文本：" + resut);
+            return resut;
         } else {
             throw new RuntimeException("仅支持HWPF处理");
         }
@@ -235,12 +239,12 @@ public class ParseDocHpwfTest {
                 p--;
                 continue;
             }
+            String label = "";
             if(para.isInList()){
                 HWPFList hwpfList = para.getList();
-                String numberText = hwpfList.getNumberText((char) para.getIlvl());
-                System.out.println(numberText);
+                label = AbstractWordUtils.getBulletText(numberStat, hwpfList,(char) para.getIlvl() );
             }
-            processParagraph(hwpfDoc,para);
+            processParagraph(hwpfDoc,para,label);
         }
     }
 

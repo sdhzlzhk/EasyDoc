@@ -2,7 +2,10 @@ package com.glodon.tika;
 
 import com.glodon.tika.vo.DocCatalog;
 import com.glodon.tika.vo.SafeDocument;
+import org.apache.poi.hwpf.converter.AbstractWordUtils;
+import org.apache.poi.hwpf.converter.NumberFormatter;
 import org.apache.poi.hwpf.converter.WordToHtmlConverter;
+import org.apache.poi.hwpf.usermodel.HWPFList;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
@@ -119,9 +122,10 @@ public class SafeDocParser {
 
     public static void main(String[] args) {
         try {
-            WordToHtmlConverter.main(new String[]{"C:\\Users\\liuzk\\Desktop\\header.doc","C:\\Users\\liuzk\\Desktop\\header.html"});
+            WordToHtmlConverter.main(new String[]{"C:\\Users\\zhongkai\\Desktop\\header.doc","C:\\Users\\zhongkai\\Desktop\\header.html"});
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }
